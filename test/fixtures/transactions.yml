@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  send: 9.99
+  receive: 9.99
+  description: MyText
+  user: one
+
+two:
+  send: 9.99
+  receive: 9.99
+  description: MyText
+  user: two
