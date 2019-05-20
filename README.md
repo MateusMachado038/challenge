@@ -1,24 +1,58 @@
-# README
+#  Bank Accounting
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+This Project is an open source API for a bank account management system, allowing you to make transfers from one customer to another and expose the current account balance.
 
-Things you may want to cover:
+## Getting Started
 
-* Ruby version
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
-* System dependencies
+### Prerequisites
 
-* Configuration
+* Install ruby version 2.5.5 and set it with your ruby environment manager
+([more info here](https://www.ruby-lang.org/en/documentation/installation/))..
 
-* Database creation
+* Install Postgres or Mysql and start the server in the foreground
+	
 
-* Database initialization
+### Project Setup
 
-* How to run the test suite
+**Install all gems**:
 
-* Services (job queues, cache servers, search engines, etc.)
+```console
+$ bundle install
+```
 
-* Deployment instructions
+**Create a new Database** 
 
-* ...
+```console
+$ rake db:create
+```
+
+**Update the database with new data model**:
+
+```console
+$ rake db:migrate
+```
+
+**Creating a new user**:
+
+```console
+$ rails c 
+```
+
+```console
+$ User.create(name: 'Example Name', email:'emails@example.com', password: 12345678) 
+```
+
+
+**Feed the database with default seeds**:
+
+```console
+$ rake db:seed
+```
+
+**Start the web server on `http://localhost:3000` by default**:
+
+```console
+$ rails server
+```

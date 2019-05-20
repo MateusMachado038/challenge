@@ -9,8 +9,10 @@ class Api::V1::TransactionsController < Api::V1::ApiController
         amount = params.require(:amount)
           
     okSend = User.find_by_id(source)   
-    okReceive = User.find_by_id(destination)                   
-    if okSend != nil  and  okReceive !=nil
+    okReceive = User.find_by_id(destination)    
+
+    if okSend != nil  and  okReceive !=nil       # verifica se usuario de origem e destino existem
+        
       @varsend = okSend
       @varreceive = okReceive
 
@@ -19,7 +21,8 @@ class Api::V1::TransactionsController < Api::V1::ApiController
         receiveID = @varreceive.id
       
     
-        if amount.to_i <= @varsend.balance and amount.to_i > 0
+        if amount.to_i <= @varsend.balance and amount.to_i > 0      # verifica se a conta de origem possui saldo suficiente e se valor é maior que 0
+
             transaction = Transaction.create(sendd:   amount  ,   receivee: 0 , user_id: sendID)
             transaction = Transaction.create(sendd:    0 ,   receivee: amount , user_id: receiveID)
     
@@ -40,18 +43,18 @@ class Api::V1::TransactionsController < Api::V1::ApiController
 def show
 
     @user = User.find(params[:id]) 
-    render json: {ID: @user.id, Name: @user.name, email: @user.email, Balance: @user.balance}, status: :ok    
+    render json: {ID: @user.id, Name: @user.name, email: @user.email, Balance: @user.balance ,}, status: :ok    
 
 end
 
 
 
             private
-
-def set_user
+ 
+def set_user   
 
     ok = User.find_by_id params[:id]                      
-              if ok != nil
+              if ok != nil                  #verifica se usuario existe
                 @user = ok
               else
                 render json: {status: 'Error', message: 'Unknown User' }, status: :unprocessable_entity    
@@ -60,7 +63,8 @@ def set_user
 
 
   
- def set_calc
+ def set_calc  # Calcula e atualiza Saldo atual
+    
 
     tamanho = Transaction.count
     tamanho2 = User.count
