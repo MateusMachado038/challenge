@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resources :transactions
+      get '/test' , controller: 'transactions' , action:'test'
     end
   end
 end

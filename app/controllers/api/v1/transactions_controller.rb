@@ -2,7 +2,10 @@ class Api::V1::TransactionsController < Api::V1::ApiController
     before_action :set_user, only: [:show]
     before_action :set_calc
 
- 
+  def test
+    render body:'Hello'
+  end
+
     def index
         source = params.require(:source_account_id)
         destination = params.require(:destination_account_id)
