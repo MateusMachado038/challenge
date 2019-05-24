@@ -1,107 +1,91 @@
 class Api::V1::TransactionsController < Api::V1::ApiController
-    before_action :set_user, only: [:show]
-    before_action :set_calc
+  before_action :set_user, only: [:show]
+  before_action :set_calc
 
   def test
     render body:'Hello'
   end
 
-    def index
-        source = params.require(:source_account_id)
-        destination = params.require(:destination_account_id)
-        amount = params.require(:amount)
-          
+  def index
+    source = params.require(:source_account_id)
+    destination = params.require(:destination_account_id)
+
+    amount = params.require(:amount)
     okSend = User.find_by_id(source)   
     okReceive = User.find_by_id(destination)    
 
-    if okSend != nil  and  okReceive !=nil       # verifica se usuario de origem e destino existem
-        
+    if okSend != nil  &&  okReceive !=nil  # verifica se usuario de origem e destino existem
       @varsend = okSend
       @varreceive = okReceive
-
-    
-        sendID = @varsend.id
-        receiveID = @varreceive.id
       
-    
-        if amount.to_i <= @varsend.balance and amount.to_i > 0      # verifica se a conta de origem possui saldo suficiente e se valor é maior que 0
+      sendID = @varsend.id
+      receiveID = @varreceive.id
 
-            transaction = Transaction.create(sendd:   amount  ,   receivee: 0 , user_id: sendID)
-            transaction = Transaction.create(sendd:    0 ,   receivee: amount , user_id: receiveID)
-    
-            render json: {status: 'SUCCESS', message: 'created successfully'}, status: :created    
-        else
-            render json: {status: 'ERROR', message: 'INCORRECT  VALUE'}, status: :conflict    
-        end
-
+      if amount.to_i <= @varsend.balance && amount.to_i > 0 # verifica se a conta de origem possui saldo suficiente e se valor é maior que 0
+        transaction = Transaction.create(sendd: amount, receivee: 0, user_id: sendID)
+        transaction = Transaction.create(sendd: 0, receivee: amount, user_id: receiveID)
+        render json: {status: 'SUCCESS', message: 'created successfully'}, status: :created  
+      else
+        render json: {status: 'ERROR', message: 'INCORRECT  VALUE'}, status: :conflict    
+      end
     else
-        render json: {status: 'Error', message: 'Unknown User' }, status: :unprocessable_entity    
+      render json: {status: 'Error', message: 'Unknown User'}, status: :unprocessable_entity    
     end
 
-    set_calc
- end
-
-
-
-def show
-
+  def show
     @user = User.find(params[:id]) 
-    render json: {ID: @user.id, Name: @user.name, email: @user.email, Balance: @user.balance ,}, status: :ok    
+    render json: {ID: @user.id, Name: @user.name, email: @user.email, Balance: @user.balance,}, status: :ok    
+  end
 
-end
-
-
-
-            private
+  private
  
-def set_user   
+  def set_user   
+    ok = User.find_by_id params[:id]  
 
-    ok = User.find_by_id params[:id]                      
-              if ok != nil                  #verifica se usuario existe
-                @user = ok
-              else
-                render json: {status: 'Error', message: 'Unknown User' }, status: :unprocessable_entity    
-            end
+    if ok != nil # verifica se usuario existe
+       @user = ok
+    else
+      render json: {status: 'Error', message: 'Unknown User'}, status: :unprocessable_entity    
+    end
   end
 
 
-  
- def set_calc  # Calcula e atualiza Saldo atual
-    
+  def set_calc2
+    @balance = Transaction.where(user_id: @User.id)
+                          .select('sum(receivee) - sum(sendd) as balance')
+                          .first
+                          .balance
+  end
 
+  def set_calc # Calcula e atualiza Saldo atual
     tamanho = Transaction.count
     tamanho2 = User.count
     count2 = 1
 
     while count2 <= tamanho2
-    @user = User.find(count2)
+      @user = User.find(count2)
 
-    count = 1
-    calc = 0
-    send = 0
-    receive = 0
-     
-    while count <= tamanho
- 
-     @transaction =  Transaction.find(count)
- 
-     if @transaction.user_id == @user.id
+      count = 1
+      calc = 0
+      send = 0
+      receive = 0
+
+      while count <= tamanho
+        @transaction =  Transaction.find(count)
+
+        if @transaction.user_id == @user.id
         send += @transaction.sendd
         receive += @transaction.receivee
-     end
+        end
+        count += 1
+      end
 
-    count += 1
- end
+      calc = receive - send
+      @user.update(balance: calc)
 
- calc = receive - send
-
- @user.update(balance: calc)
-
- count2 += 1
+      count2 += 1
     end
-end
-
-
+  end
 
 end
 
