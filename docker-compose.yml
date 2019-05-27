@@ -2,6 +2,7 @@ version: '3'
 services:
   db:
     image: mysql:5.7
+    command: mysqld --innodb-flush-method=O_DSYNC --innodb-use-native-aio=OFF    
     environment: 
       - MYSQL_ROOT_PASSWORD=mateusm1d1
     volumes:
